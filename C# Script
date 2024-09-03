@@ -1,0 +1,93 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using ArduinoBluetoothAPI;
+
+public class bluetooth2 : MonoBehaviour
+{
+    public Transform a, a2, a3, a4, b, b2, b3, b4, c, c2, c3, c4, d, d2, d3, d4, e, e2, e3, handmodel;
+    public float speed = 1f;
+    public int data;
+    private BluetoothHelper helper;
+     public string msg;
+    private string deviceAddress = "HC-05"; // Replace with your Bluetooth module's MAC address (HC-05)
+
+    void Start()
+    {
+        try
+        {
+            helper = BluetoothHelper.GetInstance(deviceAddress);
+            helper.OnConnected += OnConnected;
+            helper.OnConnectionFailed += OnConnFailed;
+
+            helper.setTerminatorBasedStream("\n");
+            helper.Connect(); // The BluetoothHelper constructor takes the device address, so no need to check for device availability.
+
+        }
+        catch (BluetoothHelper.BlueToothNotEnabledException ex)
+        {
+            Debug.LogError("Bluetooth is not enabled.");
+        }
+        catch (BluetoothHelper.BlueToothNotSupportedException ex)
+        {
+            Debug.LogError("Bluetooth is not supported on this device.");
+        }
+        catch (BluetoothHelper.BlueToothNotReadyException ex)
+        {
+            Debug.LogError("Bluetooth is not ready on this device.");
+        }
+    }
+
+    void OnConnected()
+    {
+        helper.StartListening();
+         Debug.Log("Bluetooth connected!");
+    }
+
+    void OnConnFailed()
+    {
+        Debug.LogError("Connection failed.");
+    }
+
+    void Update()
+    {
+        if (helper.Available)
+        {
+             msg = helper.Read();
+            // Process the received msg here. For example, you could log it:
+            Debug.Log("Received message: " + msg);
+        }
+           if (float.TryParse(msg, out float parsedValue))
+        {
+            data = Mathf.RoundToInt(parsedValue);
+          
+        }
+        if(data > 90){
+            data = 90;
+        }
+          
+            a.transform.eulerAngles = new Vector3(0, 0, data);
+            a2.transform.eulerAngles = new Vector3(0, 0, a.transform.eulerAngles.z + data);
+            a3.transform.eulerAngles = new Vector3(0, 0, a2.transform.eulerAngles.z + data);
+            a4.transform.eulerAngles = new Vector3(0, 0, a3.transform.eulerAngles.z + data);
+            a.transform.RotateAround(a.transform.position, Vector3.up, speed);
+
+            b.transform.eulerAngles = new Vector3(0, 0, data);
+            b2.transform.eulerAngles = new Vector3(0, 0, b.transform.eulerAngles.z + data);
+            b3.transform.eulerAngles = new Vector3(0, 0, b2.transform.eulerAngles.z + data);
+            b4.transform.eulerAngles = new Vector3(0, 0, b3.transform.eulerAngles.z + data);
+            b.transform.RotateAround(b.transform.position, Vector3.up, speed);
+
+            c.transform.eulerAngles = new Vector3(0, 0, data);
+            c2.transform.eulerAngles = new Vector3(0, 0, c.transform.eulerAngles.z + data);
+            c3.transform.eulerAngles = new Vector3(0, 0, c2.transform.eulerAngles.z + data);
+            c4.transform.eulerAngles = new Vector3(0, 0, c3.transform.eulerAngles.z + data);
+            c.transform.RotateAround(c.transform.position, Vector3.up, speed);
+
+            d.transform.eulerAngles = new Vector3(0, 0, data);
+            d2.transform.eulerAngles = new Vector3(0, 0, d.transform.eulerAngles.z + data);
+            d3.transform.eulerAngles = new Vector3(0, 0, d2.transform.eulerAngles.z + data);
+            d4.transform.eulerAngles = new Vector3(0, 0, d3.transform.eulerAngles.z + data);
+            d.transform.RotateAround(d.transform.position, Vector3.up, speed);
+    }
+}
